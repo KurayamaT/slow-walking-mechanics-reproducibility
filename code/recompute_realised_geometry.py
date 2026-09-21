@@ -6,7 +6,7 @@ For the reference branch (k_hip = -0.16) this records, at each branch point,
 both the nominal label used to prescribe the push-off and the geometry the
 walker actually realises at heel-strike:
 
-    q        branch / push-off parameter (what the paper now calls s)
+    q        branch / push-off parameter
     alpha_p  = arcsin(q/2)                  nominal half inter-leg angle
     P        = 1.04 alpha_p tan(alpha_p)    prescribed push-off
     alpha_h  = theta^+ = -theta^-           REALISED half inter-leg angle
@@ -45,6 +45,7 @@ rows = {}
 
 
 def sweep(seq, seed):
+    first_seed = None
     for q in seq:
         d = rn.solve_gait(q, k=KHIP, seed=seed)
         if d is None:
@@ -52,22 +53,25 @@ def sweep(seq, seed):
             seed = None
             continue
         seed = d["z_fp"]
+        if first_seed is None:
+            first_seed = seed
         alpha_h = float(d["z_fp"][0])
         s_real = 2.0 * np.sin(alpha_h)
         lam = d["lam"]
         nz = [x for x in lam if abs(x) > 1e-8]
         is_complex = any(abs(np.imag(x)) > 1e-10 for x in nz)
         rows[q] = dict(
-            q=q, alpha_p=d["alpha"], P=d["P"], alpha_h=alpha_h,
+            q=q, alpha_p=d["alpha_p"], P=d["P"], alpha_h=alpha_h,
             s_real=s_real, T=d["T"], v_nom=q / d["T"], v_real=s_real / d["T"],
             lam_max=d["lam_max"], margin=1.0 - d["lam_max"],
             N_half=-np.log(2.0) / np.log(d["lam_max"]),
             eig_type="complex" if is_complex else "real",
         )
+    return first_seed
 
 
-sweep(down, None)
-sweep(up, rows[start]["z_fp"] if "z_fp" in rows.get(start, {}) else None)
+start_seed = sweep(down, None)
+sweep(up, start_seed)
 
 R = [rows[q] for q in sorted(rows)]
 out = os.path.join(REPO, "data", "realised_geometry.csv")
@@ -97,14 +101,14 @@ for q in (0.010, 0.050, 0.100, 0.200, 0.400, 0.800):
               % (q, r["alpha_h"] / r["alpha_p"], r["s_real"] / q, r["v_real"] / r["v_nom"]))
 
 print()
-print("  短歩幅スケーリング(論文は名目 s<=0.05 の 41点で 8.71 s^2.013)")
+print("  短歩幅スケーリング（名目パラメータと実現歩幅）")
 for label, key, cut in (("名目 q", "q", 0.05), ("実現 s_real", "s_real", 0.05)):
     sel = [r for r in R if r[key] <= cut + 1e-12 and r["q"] >= 0.0099]
     e, c = fit([r[key] for r in sel], [r["margin"] for r in sel])
     print("    %-12s n=%2d  指数=%.4f  係数=%.4f" % (label, len(sel), e, c))
 
 print()
-print("  スロー端の局所比(論文は 8.23)")
+print("  スロー端の局所比")
 r = rows[0.010]
 print("    (1-|lam|)/q^2      = %.4f" % (r["margin"] / r["q"] ** 2))
 print("    (1-|lam|)/s_real^2 = %.4f" % (r["margin"] / r["s_real"] ** 2))
@@ -126,7 +130,7 @@ prev = None
 for r in R:
     if prev and prev["eig_type"] != r["eig_type"]:
         print("    q     : [%.4f, %.4f]" % (prev["q"], r["q"]))
-        print("    v_nom : [%.6f, %.6f]   (論文 v*≈0.041)" % (prev["v_nom"], r["v_nom"]))
+        print("    v_nom : [%.6f, %.6f]" % (prev["v_nom"], r["v_nom"]))
         print("    v_real: [%.6f, %.6f]" % (prev["v_real"], r["v_real"]))
     prev = r
 

@@ -1,0 +1,43 @@
+here = fileparts(mfilename('fullpath'));
+root = fileparts(here);
+D = readtable(fullfile(root, 'data_matlab', 'jacobian_decomposition.csv'));
+F = readtable(fullfile(root, 'data_matlab', 'jacobian_freeze_test.csv'));
+outdir = fullfile(root, 'figures_matlab');
+if ~exist(outdir, 'dir'), mkdir(outdir); end
+D = sortrows(D(D.is_complex == 0 & D.q <= 0.130, :), 'q');
+F = sortrows(F, 'q');
+f = figure('Visible', 'off', 'Units', 'inches', 'Position', [1 1 7.2 5.2], 'Color', 'w');
+ax1 = axes(f, 'Position', [0.085 0.32 0.38 0.57]); hold(ax1, 'on');
+plot(ax1, D.s, -D.dlam_dq_fd, '-', 'Color', [0 0 0], 'LineWidth', 2.2, 'DisplayName', '$-\,d\lambda_{\max}/dq$ (finite difference)');
+plot(ax1, D.s, -D.c_reset, '--', 'Color', [0.25 0.25 0.25], 'LineWidth', 1.5, 'DisplayName', 'reset factor $B$');
+plot(ax1, D.s, -D.c_reset_geom, ':', 'Color', [0.45 0.45 0.45], 'LineWidth', 1.6, 'DisplayName', 'of which collision angle $\alpha$');
+plot(ax1, D.s, -D.c_swing, '-.', 'Color', [0.6 0.6 0.6], 'LineWidth', 1.5, 'DisplayName', 'swing/event factor $A$');
+xlabel(ax1, 'step length $s$', 'Interpreter', 'latex');
+ylabel(ax1, '$-\,d\lambda_{\max}/dq$', 'Interpreter', 'latex');
+title(ax1, {'(a) attribution of the', 'step-length dependence'}, 'FontSize', 10, 'FontWeight', 'normal');
+xlim(ax1, [0 0.135]);
+ax2 = axes(f, 'Position', [0.59 0.32 0.38 0.57]); hold(ax2, 'on');
+semilogy(ax2, F.s, 1-F.lam_true, '-', 'Color', [0 0 0], 'LineWidth', 2.2, 'DisplayName', 'full map');
+semilogy(ax2, F.s, 1-F.lam_Afrozen_q010, '--', 'Color', [0.3 0.3 0.3], 'LineWidth', 1.5, 'DisplayName', 'swing/event map frozen');
+semilogy(ax2, F.s, 1-F.lam_Bfrozen_q010, ':', 'Color', [0.5 0.5 0.5], 'LineWidth', 1.8, 'DisplayName', 'reset map frozen');
+set(ax2, 'YScale', 'log');
+xlabel(ax2, 'step length $s$', 'Interpreter', 'latex');
+ylabel(ax2, 'recovery margin $1-\lambda_{\max}$', 'Interpreter', 'latex');
+title(ax2, '(b) freeze test', 'FontSize', 10, 'FontWeight', 'normal');
+xlim(ax2, [0 0.145]); ylim(ax2, [5e-4 0.4]);
+for ax = [ax1 ax2]
+    set(ax, 'FontName', 'Times New Roman', 'FontSize', 10, 'GridColor', [0.9 0.9 0.9], 'GridAlpha', 1);
+    ax.TitleHorizontalAlignment = 'left';
+    grid(ax, 'on'); box(ax, 'off');
+end
+lg1 = legend(ax1, 'Interpreter', 'latex', 'FontSize', 9, 'Box', 'off');
+lg1.Units = 'normalized'; lg1.Position = [0.07 0.015 0.42 0.20];
+lg2 = legend(ax2, 'Interpreter', 'latex', 'FontSize', 9, 'Box', 'off');
+lg2.Units = 'normalized'; lg2.Position = [0.575 0.075 0.40 0.15];
+annotation(f, 'textbox', [0.58 0.005 0.41 0.06], 'String', 'Frozen at $q=0.010$ ($s=0.0099$)', 'Interpreter', 'latex', 'FontSize', 9, 'LineStyle', 'none', 'HorizontalAlignment', 'center');
+base = fullfile(outdir, 'Figure_5');
+exportgraphics(f, [base '.png'], 'Resolution', 300);
+exportgraphics(f, [base '.pdf'], 'ContentType', 'vector');
+exportgraphics(f, [base '.tiff'], 'Resolution', 300);
+close(f);
+fprintf('saved %s\n', base);

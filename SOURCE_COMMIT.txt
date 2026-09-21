@@ -1,3 +1,2 @@
-Source repository: https://github.com/KurayamaT/slow_walking_mechanics
-Source commit: cc6a9f7a04e3caffaa3d03ac27e83738da4b5756
+Source workspace commit: cc6a9f7a04e3caffaa3d03ac27e83738da4b5756
 Prepared: 2026-09-21

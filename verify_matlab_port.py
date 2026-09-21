@@ -117,7 +117,7 @@ def quoted_numbers():
     dets = [f(r, "det") for r in ts]
     out += [("3.3 / 4.4 / S2: transition bracket, lower end", "0.040266", f"{lo:.6f}"),
             ("3.3 / 4.4 / S2: transition bracket, upper end", "0.040380", f"{hi:.6f}"),
-            ("S2: bracket width", "1.16e-04", f"{hi - lo:.2e}"),
+            ("S2: bracket width", "1.14e-04", f"{hi - lo:.2e}"),
             ("S2: det A variation over the grid", "0.18 %", f"{(max(dets) - min(dets)) / min(dets) * 100:.2f} %"),
             ("S2: emergent imaginary part", "0.012400", f"{abs(f(cx[0], 'l1_im')):.6f}")]
 

@@ -4,11 +4,10 @@ Investigate the low-speed end of the fixed-k_hip family (c = 1.04):
      |lambda_max|); find the lowest s with a converged stable fixed point and
      whether |lambda_max| -> 1 there (a genuine fold/limit) or the branch is
      simply cut off by non-convergence.
-  2. Cross-check against the MATLAB master near s=0.054 (paper's slowest gait).
+  2. Cross-check against the earlier MATLAB master near s=0.054.
   3. Forward-iterate the return map from the lowest gait to confirm it is a
      genuine, stable periodic orbit (not a numerical artifact).
-  4. Near s=0.054, look for a SECOND (unstable) fixed point — the saddle-node
-     partner the paper reports.
+  4. Near s=0.054, look for a second fixed point.
 """
 import numpy as np
 import revision_numerics as R
@@ -70,7 +69,10 @@ P_lo = last["P"]
 z = zlo.copy()
 devs = []
 for n in range(20):
-    z = np.array(R.step_map(z, R.GAM, R.KHIP, P_lo, R.RTOL, R.ATOL), float)
+    z_next, _, ok = R.step_map(z, R.GAM, R.KHIP, P_lo, R.RTOL, R.ATOL)
+    if not ok:
+        raise RuntimeError(f"step map failed at iteration {n + 1}")
+    z = np.array(z_next, float)
     devs.append(float(np.linalg.norm(z - zlo)))
 print(f"  s={last['s']:.4f} v={last['v']:.4f}: max |z_n - z*| over 20 steps = {max(devs):.2e} "
       f"(stays put => genuine stable orbit)" if max(devs) < 1e-3 else

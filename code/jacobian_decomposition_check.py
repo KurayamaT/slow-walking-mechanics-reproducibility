@@ -5,7 +5,7 @@ return-map Jacobian (MATLAB primary: code_matlab/run_jacobian_decomposition.m an
 run_freeze_test.m). Cross-checks the two MATLAB CSVs column by column.
 
   J = B A,  A = d(flow to heel-strike)/dz (numerical),  B = d(reset)/dy (analytic)
-  d lambda/ds = l' (dB/ds A + B dA/ds) r / (l' r)   for the simple dominant eigenvalue
+  d lambda/dq = l' (dB/dq A + B dA/dq) r / (l' r)   for the simple dominant eigenvalue
 
 Run from code/:  python3 jacobian_decomposition_check.py
 Nothing is written except a report to stdout.
@@ -14,7 +14,7 @@ import os
 import csv
 import numpy as np
 from numpy.linalg import eig, norm
-from scipy.integrate import solve_ivp
+from scipy.integrate import solve_ivp, trapezoid
 import revision_numerics as R
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -102,22 +102,22 @@ for i in range(1, len(S) - 1):
     cv = (np.conj(l) @ (dBv @ A[i]) @ r) / nrm
     cp = (np.conj(l) @ (dBp @ A[i]) @ r) / nrm
     lp = R.sorted_eigs(B[i - 1] @ A[i - 1])[0]; lm = R.sorted_eigs(B[i + 1] @ A[i + 1])[0]
-    rows[float(S[i])] = dict(lam_max=abs(lam), dlam_ds_fd=float(np.real((lp - lm) / (2 * H))),
+    rows[float(S[i])] = dict(lam_max=abs(lam), dlam_dq_fd=float(np.real((lp - lm) / (2 * H))),
                             c_swing=float(np.real(c_sw)), c_reset=float(np.real(c_rs)),
                             c_reset_geom=float(np.real(cg)), c_reset_vel=float(np.real(cv)),
                             c_reset_push=float(np.real(cp)))
 
 # ------------------------------------------------------------ compare with MATLAB
-ML = {float(r["s"]): r for r in csv.DictReader(open(os.path.join(DATA, "jacobian_decomposition.csv")))}
-cols = ["lam_max", "dlam_ds_fd", "c_swing", "c_reset", "c_reset_geom", "c_reset_vel", "c_reset_push"]
-print("\n=== decomposition: max |python - matlab| over the real regime s <= 0.13 ===")
+ML = {float(r["q"]): r for r in csv.DictReader(open(os.path.join(DATA, "jacobian_decomposition.csv")))}
+cols = ["lam_max", "dlam_dq_fd", "c_swing", "c_reset", "c_reset_geom", "c_reset_vel", "c_reset_push"]
+print("\n=== decomposition: max |python - matlab| over the real regime q <= 0.13 ===")
 for c in cols:
-    d = max(abs(rows[s][c] - float(ML[s][c])) for s in rows if s <= 0.13 and s in ML)
+    d = max(abs(rows[q][c] - float(ML[q][c])) for q in rows if q <= 0.13 and q in ML)
     print(f"  {c:<14} {d:.2e}")
-real = sorted(s for s in rows if s <= 0.13)
-I = lambda key: np.trapz([rows[s][key] for s in real], real)
+real = sorted(q for q in rows if q <= 0.13)
+I = lambda key: trapezoid([rows[q][key] for q in real], real)
 tot = I("c_swing") + I("c_reset")
-print("\n=== attribution over s in [%.3f, %.3f] (python) ===" % (real[0], real[-1]))
+print("\n=== attribution over q in [%.3f, %.3f] (python) ===" % (real[0], real[-1]))
 print(f"  swing/event : {100 * I('c_swing') / tot:6.1f} %")
 print(f"  reset       : {100 * I('c_reset') / tot:6.1f} %")
 print(f"    geometry  : {100 * I('c_reset_geom') / tot:6.1f} %")
@@ -125,16 +125,19 @@ print(f"    velocity  : {100 * I('c_reset_vel') / tot:6.1f} %")
 print(f"    push-off  : {100 * I('c_reset_push') / tot:6.1f} %")
 
 # ------------------------------------------------------------ freeze test
-MF = {float(r["s"]): r for r in csv.DictReader(open(os.path.join(DATA, "jacobian_freeze_test.csv")))}
+MF = {float(r["q"]): r for r in csv.DictReader(open(os.path.join(DATA, "jacobian_freeze_test.csv")))}
 idx = {float(s): i for i, s in enumerate(S)}
 iref = idx[0.010]
-print("\n=== freeze test (A frozen / B frozen at s=0.010): max |python - matlab| ===")
+print("\n=== freeze test (A frozen / B frozen at q=0.010): max |python - matlab| ===")
 dA_ = dB_ = 0.0
-for s in MF:
-    i = idx.get(s)
+matched = 0
+for q in MF:
+    i = idx.get(q)
     if i is None:
         continue
+    matched += 1
     la = abs(R.sorted_eigs(B[i] @ A[iref])[0]); lb = abs(R.sorted_eigs(B[iref] @ A[i])[0])
-    dA_ = max(dA_, abs(la - float(MF[s]["lam_Afrozen_ref0.010"])))
-    dB_ = max(dB_, abs(lb - float(MF[s]["lam_Bfrozen_ref0.010"])))
+    dA_ = max(dA_, abs(la - float(MF[q]["lam_Afrozen_q010"])))
+    dB_ = max(dB_, abs(lb - float(MF[q]["lam_Bfrozen_q010"])))
+assert matched == len(MF), (matched, len(MF))
 print(f"  lam_Afrozen  {dA_:.2e}\n  lam_Bfrozen  {dB_:.2e}")

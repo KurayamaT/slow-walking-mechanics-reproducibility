@@ -4,7 +4,7 @@
 
 Supplementary S4 compares four foot masses at "the same s = 0.040", but s there
 is the branch label q = 2 sin(alpha_p), not the realised step length. This ports
-the finite-beta model from others/code/floquet/floquet_KUO_v2_beta.m to Python so
+the finite-beta model from legacy/code/floquet_KUO_v2_beta.m to Python so
 the realised heel-strike angle alpha_h can be recorded, validates the port
 against the stored MATLAB branches, and re-makes the comparison at a common
 realised step length.
@@ -144,8 +144,8 @@ def gait(q, beta, seed=None, beta_step=0.01):
 # ---- 1. validate the port against the stored MATLAB branches ----
 print("=== 移植の検証(MATLAB の β 枝との一致)===")
 for b in BETAS:
-    f = "others/results/csv/floquet_beta%.3f_k-0.160.csv" % b
-    p = os.path.join(os.path.dirname(REPO), f)
+    f = "legacy/results/csv/floquet_beta%.3f_k-0.160.csv" % b
+    p = os.path.join(REPO, f)
     if not os.path.exists(p):
         print("  %s が無い" % f); continue
     rows = list(csv.DictReader(open(p)))
