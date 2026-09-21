@@ -1,0 +1,38 @@
+{
+  "matlab_version": "26.1.0.3312084 (R2026a) Update 4",
+  "matlab_release": "2026a",
+  "beta": [
+    0,
+    0.05,
+    0.1,
+    0.15
+  ],
+  "q_min": 0.04,
+  "q_max": 0.088,
+  "q_spacing": 0.004,
+  "n_rows": 52,
+  "relative_tolerance": 1E-12,
+  "absolute_tolerance": 1E-14,
+  "fixed_point_tolerance": 1E-12,
+  "fixed_point_difference_step": 1E-7,
+  "jacobian_difference_step": 1E-6,
+  "comparison_jacobian_difference_step": 1E-7,
+  "max_absolute_difference": {
+    "alpha_h": 2.706623120074525E-12,
+    "s_real": 5.4125454118647554E-12,
+    "T": 2.744915406083237E-12,
+    "lam_max": 3.187934360937561E-10,
+    "N_half": 9.8529875458552851E-6
+  },
+  "parity_limits": {
+    "alpha_h": 1E-8,
+    "s_real": 2E-8,
+    "T": 1E-7,
+    "lam_max": 1E-7,
+    "N_half": 0.005
+  },
+  "max_fixed_point_residual": 9.9197595514354846E-13,
+  "common_step_length": 0.039524,
+  "reported_half_lives_reproduced": true,
+  "elapsed_seconds": 9.15934825
+}

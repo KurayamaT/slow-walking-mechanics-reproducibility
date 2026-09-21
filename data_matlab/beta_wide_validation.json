@@ -1,0 +1,25 @@
+{
+  "matlab_version": "26.1.0.3312084 (R2026a) Update 4",
+  "matlab_release": "2026a",
+  "alpha_p_grid": "linspace(0.02,0.10,40) plus linspace(0.10,0.45,45) excluding first point",
+  "continuation": "fixed beta, q decreased and increased from independently reproduced MATLAB fine-branch q=0.088 state; fresh fixed-point solve at every wide-grid point",
+  "beta": [
+    0,
+    0.05,
+    0.1,
+    0.15
+  ],
+  "n_rows": 336,
+  "q_min": 0.03999733338666616,
+  "q_max": 0.86993106822246036,
+  "relative_tolerance": 1E-12,
+  "absolute_tolerance": 1E-14,
+  "fixed_point_tolerance": 1E-12,
+  "jacobian_difference_step": 1E-6,
+  "legacy_matched_rows": 335,
+  "max_rho_difference": 5.34588065814745E-7,
+  "max_legacy_speed_difference": 4.94057289492783E-7,
+  "max_fixed_point_residual": 9.97067046489276E-13,
+  "low_speed_trend_reproduced": true,
+  "elapsed_seconds": 12.133496291666667
+}
