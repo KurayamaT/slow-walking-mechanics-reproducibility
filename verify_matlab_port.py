@@ -58,7 +58,7 @@ def compare(name):
     A, B = read(p), read(m)
     print(f"\n=== {name} ===   rows: python {len(A)}, matlab {len(B)}")
     if len(A) != len(B):
-        print("  ROW COUNT DIFFERS — columns not compared")
+        print("  ROW COUNT DIFFERS - columns not compared")
         return
     if not A:
         return
@@ -81,7 +81,7 @@ def matlab_only_note():
     for name in MATLAB_ONLY:
         here = os.path.exists(os.path.join(ML, name + ".csv"))
         print(f"  {name:<24} {'present in data_matlab/' if here else 'MISSING'}"
-              f"   — produced by MATLAB only, so not cross-checked")
+              f"   - produced by MATLAB only, so not cross-checked")
 
 
 def quoted_numbers():

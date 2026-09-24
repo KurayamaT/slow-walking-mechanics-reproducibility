@@ -4,6 +4,8 @@ This repository contains the numerical code, derived data, and figures supportin
 
 The study uses a theoretical walking model. The repository contains no human participant data. The manuscript and its supplementary material describe the model, analysis, and the meaning of each figure and table.
 
+This release is limited to material that supports, checks, or reproduces the manuscript results. It contains no manuscript drafts, submission forms, participant data, credentials, or machine-specific configuration. Historical foot-mass code and numerical outputs are retained only because they support the comparison reported in Supplementary Section S4.
+
 ## Where to find the results
 
 | Manuscript item | Code | Stored numerical data | Submitted image |
@@ -53,3 +55,7 @@ For fresh computations, use MATLAB with the `code_matlab/` directory on the path
 ## Provenance
 
 The files were assembled from the study workspace for the JBSE submission. `SOURCE_COMMIT.txt` records the workspace commit used for the snapshot. The two public MATLAB copies that read historical foot-mass CSV files were adjusted only to point to this repository's `legacy/results/csv/` directory. The source workspace files were not changed by that path adjustment.
+
+## License
+
+Source code is available under the MIT License. Numerical data, figures, and documentation are available under the Creative Commons Attribution 4.0 International License (CC BY 4.0). See `LICENSE` for details.

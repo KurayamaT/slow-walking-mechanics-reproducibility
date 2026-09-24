@@ -1,4 +1,0 @@
-fixed k_hip=-0.16; eigenvalue-type transition (complex<->real near 1)
-v_transition = 0.0408
-just below: v=0.0407 |lam|=0.7338 Im=0.0000 N_half=2.2 eig=real
-just above: v=0.0409 |lam|=0.7209 Im=0.0114 N_half=2.1 eig=complex

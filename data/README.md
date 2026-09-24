@@ -52,8 +52,6 @@ is retained as a historical output and should not be substituted for it.
 | `supp_validation_branch.csv` | fixed-point residual, `lam3_abs`, and 2D-vs-3D Jacobian agreement along the branch — Figure S1b |
 | `transition_spectrum.csv` | trace, determinant, discriminant and the complex pair near the transition — Figure S2 |
 | `sens_amplitude.csv`, `amp_traces.csv` | perturbation-amplitude dependence |
-| `master_transition.txt`, `phase0_SL_SF_transect_summary.csv`, `u7_phase1_grid_*.csv` | earlier exploratory sweeps, not cited in the manuscript |
-
 Python scripts and older MATLAB scripts for files in this directory are in
 `../code/`. Current MATLAB scripts write to `../data_matlab/`; the Supplementary
 material's Data and code table lists the files used for each analysis.
